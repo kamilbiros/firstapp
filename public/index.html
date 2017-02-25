@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html ng-app="shoppingList">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Lista Zakupów</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+<body>
+	<div ng-controller="shoppingController">
+
+		<div class="container well text-center">
+			<h1>Lista Zakupów</h1>
+			<div class="row">
+		  		<div class="col-md-3">
+			  		<form>
+						<p><input class="form-control" placeholder="Wprowadź produkt..." type="text" ng-model="newProductName" name="productName"/></p>
+						<p><button type="submit" class="btn btn-primary form-control" ng-click="addNewProduct()" id="add">dodaj</button></p>
+					</form>
+				</div>
+			</div>
+		</div>
+				
+				<div id="productList" >
+						
+					<div class="container">
+					<div class="col-md-offset-1 col-xs-10">
+							<span class="btn btn-default" style="cursor: pointer;" ng-click="changeSortOrder('name')">Nazwa <span class="glyphicon"
+							 ng-class="{'glyphicon-chevron-down' : orderDirection, 'glyphicon-chevron-up' : !orderDirection }"
+							ng-show="orderByColumn === 'name'" aria-hidden="true"></span>
+							</span>
+
+							<span class="btn btn-default" style="cursor: pointer;" ng-click="changeSortOrder('colour')">Kategoria <span class="glyphicon"
+							 ng-class="{'glyphicon-chevron-down' : orderDirection, 'glyphicon-chevron-up' : !orderDirection }"
+							ng-show="orderByColumn === 'colour'" aria-hidden="true"></span>
+							</span>
+						</div>
+					</div>
+					<div class="container" ng-repeat = "product in shoppingList | orderBy : orderByColumn : orderDirection">
+						<div class="col-xs-10">
+							<button class="btn btn-block" style="margin:3px 0;" ng-class="colourArr[product.colour]" ng-click="changeColour(product._id, product.colour)" data-index="0">{{product.name}}</button>
+						</div>
+						<div class="col-xs-2">
+							<button class="btn btn-danger glyphicon glyphicon-remove" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
+						</div>
+					</div>
+
+
+				</div>
+		
+	</div>
+
+<script src="scripts/angular.min.js"></script>
+
+<script>
+	
+	var app = angular.module("shoppingList", []);
+
+	app.controller('shoppingController', ['$scope','$http','$log', function($scope,$http,$log){
+		
+		$scope.shoppingList = [];
+		$scope.newProductName = "";
+
+		$scope.orderByColumn = "name";
+		$scope.orderDirection = false;
+
+		$scope.colourArr = [
+
+			"btn-default",
+			"btn-primary",
+			"btn-success",
+			"btn-info",
+			"btn-warning",
+			"btn-danger"
+			
+		];
+
+
+
+		$scope.changeSortOrder = function(name){
+
+			$scope.orderByColumn = name;
+
+			$scope.orderDirection = $scope.orderDirection === false ? true : false;
+
+		};
+
+		
+
+		$scope.getProducts = function(){
+
+			$http.get("/api/products").then(function(response){
+
+				$scope.shoppingList = response.data.products;
+
+			});
+			//.then(response => $scope.shoppingList = response.data.products);
+
+		};
+
+		$scope.getProducts();
+
+		$scope.addNewProduct = function(){
+			$log.log($scope.newProductName);
+
+			$http.post("/api/products",{
+			 	product: $scope.newProductName,
+			 	colour: 0
+			}).then(function(response){
+
+				$log.log(response);
+				$scope.getProducts();
+				$scope.newProductName = "";
+
+			});
+
+			//$log.log("new product" + $scope.newProductName);
+		};
+
+		$scope.deleteProduct = function(id){
+
+			$http.delete("/api/product/" + id).then(function(response){
+
+				$log.log(response);
+				$scope.getProducts();
+
+			});
+				
+		};
+
+		$scope.changeColour = function(id,colour){
+
+			$log.log($scope.colourArr.length);
+			colour = colour < $scope.colourArr.length-1 ? colour+1 : 0;
+
+			$log.log(colour);
+			
+
+			$http.put("/api/product/" + id,{
+				colour: colour
+			}).then(function(response){
+
+				$log.log(response);
+				$scope.getProducts();
+
+
+			});
+
+		};
+
+	}]);
+
+
+</script>
+
+
+
+<!-- <script type="text/javascript">
+
+
+	getProducts();
+
+	
+	$('#add').on("click",function(e){
+
+		var productName = $("#productName").val();
+		$.ajax({
+			url: "/api/products",
+			method: "post",
+			data: {
+				product: productName
+			},
+			success: function(data){
+				console.log(data.product);
+				getProducts();
+			}
+		});
+	});
+
+	const WEBSITE_URL = "http://localhost:8080/";
+	
+	function getProducts(){
+
+		$.ajax({
+			url: "/api/products",
+			method: "get",
+			success: function(data){
+				$('#productList').text("");
+				for(var i=0; i<data.products.length; i++){
+					$('#productList').append(`<p><button class="btn btn-default product" data-index="0">${data.products[i].name}</button> <button class="btn btn-danger glyphicon glyphicon-remove remove" data-product-id="${data.products[i]._id}"></button></p>`);
+				}
+				$('.remove').on("click",function(e){
+
+					removeProduct(e.target.dataset.productId);
+
+				});
+
+				$('.remove').on("click",function(e){
+
+					removeProduct(e.target.dataset.productId);
+
+				});
+
+				$('.product').on("click",function(e){
+
+					changeColor(e.target);
+
+				});
+			}
+		});
+
+	}
+
+	function changeColor(product){
+
+		colorArr = [
+
+			"btn btn-default product",
+			"btn btn-primary product",
+			"btn btn-success product",
+			"btn btn-info product",
+			"btn btn-warning product",
+			"btn btn-danger product"
+			
+		];
+
+		$(product).removeClass($(product).attr("class"));
+		
+		var index = Number(product.dataset.index);
+		product.dataset.index = (Number(product.dataset.index) === 5) ? 0 : Number(product.dataset.index)+1;
+		console.log(product.dataset.index);
+		$(product).addClass(colorArr[(Number(product.dataset.index))]);
+		
+
+
+
+	}
+
+	function removeProduct(id){
+
+		$.ajax({
+			url: "/api/product/"+id,
+			method: "delete",
+
+			success: function(data){
+				console.log(data.product);
+				getProducts();
+			}
+		});
+
+
+	}
+
+
+
+	// $.ajax({
+	// 	url: "/api/product/",
+	// 	method: "delete",
+	// 	success: function(data){
+
+	// 		for(var i=0; i<data.products.length; i++){
+	// 			console.log(data);
+	// 			$('#productList').append(`<p><button class="btn btn-default">${data.products[i].name}</button> <button class="btn btn-danger" id="remove" data-productId="${data.products[i]._id}"><span class="glyphicon glyphicon-remove"></span></button></p>`);
+	// 		}
+			
+	// 	}
+	// });
+
+</script> -->
+
+</body>
+</html>
