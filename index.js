@@ -8,6 +8,12 @@ app.use(express.static("public"));
 
 app.use(bodyParser.json());
 
+app.get("/",function(req,res){
+
+	res.send("witam!");
+
+});
+
 app.post("/api/products", function(req,res){
 
 	api.addProduct(req.body)
