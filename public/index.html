@@ -22,26 +22,29 @@
 		</div>
 				
 				<div id="productList" >
-						
+					
 					<div class="container">
-					<div class="col-md-offset-1 col-xs-10">
-							<span class="btn btn-default" style="cursor: pointer;" ng-click="changeSortOrder('name')">Nazwa <span class="glyphicon"
-							 ng-class="{'glyphicon-chevron-down' : orderDirection, 'glyphicon-chevron-up' : !orderDirection }"
-							ng-show="orderByColumn === 'name'" aria-hidden="true"></span>
-							</span>
+					<div class="alert alert-info" ng-show="shoppingList.length === 0" role="alert">Lista produktów jest pusta!</div>
+						<div class="row" ng-show="shoppingList.length > 1">
+							<div class="col-md-offset-1 col-xs-10">
+								<span class="btn btn-default" style="cursor: pointer;" ng-click="changeSortOrder('name')">Nazwa <span class="glyphicon"
+								 ng-class="{'glyphicon-chevron-down' : orderDirection, 'glyphicon-chevron-up' : !orderDirection }"
+								ng-show="orderByColumn === 'name'" aria-hidden="true"></span>
+								</span>
 
-							<span class="btn btn-default" style="cursor: pointer;" ng-click="changeSortOrder('colour')">Kategoria <span class="glyphicon"
-							 ng-class="{'glyphicon-chevron-down' : orderDirection, 'glyphicon-chevron-up' : !orderDirection }"
-							ng-show="orderByColumn === 'colour'" aria-hidden="true"></span>
-							</span>
+								<span class="btn btn-default" style="cursor: pointer;" ng-click="changeSortOrder('colour')">Kategoria <span class="glyphicon"
+								 ng-class="{'glyphicon-chevron-down' : orderDirection, 'glyphicon-chevron-up' : !orderDirection }"
+								ng-show="orderByColumn === 'colour'" aria-hidden="true"></span>
+								</span>
+							</div>
 						</div>
-					</div>
-					<div class="container" ng-repeat = "product in shoppingList | orderBy : orderByColumn : orderDirection">
-						<div class="col-xs-10">
-							<button class="btn btn-block" style="margin:3px 0;" ng-class="colourArr[product.colour]" ng-click="changeColour(product._id, product.colour)" data-index="0">{{product.name}}</button>
-						</div>
-						<div class="col-xs-2">
-							<button class="btn btn-danger glyphicon glyphicon-remove" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
+						<div class="row" ng-repeat = "product in shoppingList | orderBy : orderByColumn : orderDirection">
+							<div class="col-xs-10">
+								<button class="btn btn-block" style="margin:3px 0;" ng-class="colourArr[product.colour]" ng-click="changeColour(product._id, product.colour)" data-index="0">{{product.name}}</button>
+							</div>
+							<div class="col-xs-2">
+								<button class="btn btn-danger glyphicon glyphicon-remove" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
+							</div>
 						</div>
 					</div>
 
