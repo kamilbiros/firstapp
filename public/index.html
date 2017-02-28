@@ -10,12 +10,13 @@
 	<div ng-controller="shoppingController">
 
 		<div class="container well text-center">
-			<h1>Lista Zakupów</h1>
+			<h1><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Lista Zakupów</h1>
 			<div class="row">
 		  		<div class="col-md-3">
 			  		<form>
 						<p><input class="form-control" placeholder="Wprowadź produkt..." type="text" ng-model="newProductName" name="productName"/></p>
-						<p><button type="submit" class="btn btn-primary form-control" ng-click="addNewProduct()" id="add">dodaj</button></p>
+						<p><button type="submit" class="btn btn-primary form-control" ng-click="addNewProduct()" id="add">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> dodaj</button></p>
 					</form>
 				</div>
 			</div>
