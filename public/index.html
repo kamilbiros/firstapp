@@ -22,7 +22,8 @@
 				</div>
 			</div>
 		</div>
-		<div id="loader" ng-show="disabledDelete"></div>
+		<div id="loaderBackground" ng-show="loader"></div>
+		<div id="loader" ng-show="loader"></div>
 				
 				<div id="productList" >
 					
@@ -46,7 +47,7 @@
 								<button class="btn btn-block" style="margin:3px 0;" ng-class="colourArr[product.colour]" ng-click="changeColour(product._id, product.colour)" data-index="0">{{product.name}}</button>
 							</div>
 							<div class="col-xs-2">
-								<button class="btn btn-danger glyphicon glyphicon-remove" ng-disabled="disabledDelete" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
+								<button class="btn btn-danger glyphicon glyphicon-remove" ng-disabled="loader" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
 							</div>
 						</div>
 					</div>
@@ -69,7 +70,7 @@
 
 		$scope.orderByColumn = "name";
 		$scope.orderDirection = false;
-		$scope.disabledDelete = false;
+		$scope.loader = false;
 
 		$scope.colourArr = [
 
@@ -95,11 +96,12 @@
 		
 
 		$scope.getProducts = function(){
+			$scope.loader = true;
 
 			$http.get("/api/products").then(function(response){
 
 				$scope.shoppingList = response.data.products;
-
+				$scope.loader = false;
 			});
 			//.then(response => $scope.shoppingList = response.data.products);
 
@@ -108,7 +110,7 @@
 		$scope.getProducts();
 
 		$scope.addNewProduct = function(){
-			$log.log($scope.newProductName);
+			$scope.loader = true;
 
 			if($scope.newProductName.trim() === ""){
 				
@@ -125,6 +127,7 @@
 					$log.log(response);
 					$scope.getProducts();
 					$scope.newProductName = "";
+					$scope.loader = false;
 
 				});
 
@@ -137,24 +140,23 @@
 
 		$scope.deleteProduct = function(id){
 
-			$scope.disabledDelete = true;
+			$scope.loader = true;
 
 			$http.delete("/api/product/" + id).then(function(response){
 
 				$log.log(response);
 				$scope.getProducts();
-				$scope.disabledDelete = false;
+				$scope.loader = false;
 
 			});
 				
 		};
 
 		$scope.changeColour = function(id,colour){
+			$scope.loader = true;
 
-			$log.log($scope.colourArr.length);
+			
 			colour = colour < $scope.colourArr.length-1 ? colour+1 : 0;
-
-			$log.log(colour);
 			
 
 			$http.put("/api/product/" + id,{
@@ -163,6 +165,7 @@
 
 				$log.log(response);
 				$scope.getProducts();
+				$scope.loader = true;
 
 
 			});
