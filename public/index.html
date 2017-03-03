@@ -4,6 +4,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Lista Zakupów</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/style.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>
 <body>
@@ -21,6 +22,7 @@
 				</div>
 			</div>
 		</div>
+		<div id="loader" ng-show="disabledDelete"></div>
 				
 				<div id="productList" >
 					
@@ -44,7 +46,7 @@
 								<button class="btn btn-block" style="margin:3px 0;" ng-class="colourArr[product.colour]" ng-click="changeColour(product._id, product.colour)" data-index="0">{{product.name}}</button>
 							</div>
 							<div class="col-xs-2">
-								<button class="btn btn-danger glyphicon glyphicon-remove" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
+								<button class="btn btn-danger glyphicon glyphicon-remove" ng-disabled="disabledDelete" style="margin:3px 0;" ng-click="deleteProduct(product._id)"></button>
 							</div>
 						</div>
 					</div>
@@ -67,6 +69,7 @@
 
 		$scope.orderByColumn = "name";
 		$scope.orderDirection = false;
+		$scope.disabledDelete = false;
 
 		$scope.colourArr = [
 
@@ -134,10 +137,13 @@
 
 		$scope.deleteProduct = function(id){
 
+			$scope.disabledDelete = true;
+
 			$http.delete("/api/product/" + id).then(function(response){
 
 				$log.log(response);
 				$scope.getProducts();
+				$scope.disabledDelete = false;
 
 			});
 				
