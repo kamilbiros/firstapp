@@ -107,16 +107,27 @@
 		$scope.addNewProduct = function(){
 			$log.log($scope.newProductName);
 
-			$http.post("/api/products",{
-			 	product: $scope.newProductName,
-			 	colour: 0
-			}).then(function(response){
+			if($scope.newProductName.trim() === ""){
+				
+				$log.log("empty");
 
-				$log.log(response);
-				$scope.getProducts();
-				$scope.newProductName = "";
+			}
+			else{
 
-			});
+				$http.post("/api/products",{
+				 	product: $scope.newProductName,
+				 	colour: 0
+				}).then(function(response){
+
+					$log.log(response);
+					$scope.getProducts();
+					$scope.newProductName = "";
+
+				});
+
+			}
+
+			
 
 			//$log.log("new product" + $scope.newProductName);
 		};
